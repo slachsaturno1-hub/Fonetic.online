@@ -1,0 +1,1064 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Jogos de Fonética</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Gentium+Plus:wght@400;700&family=Nunito:wght@600;700;800&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: menu de cartões em coluna única; jogos em uma tela com cabeçalho, placar e palco; resultado em folha inferior. */
+:root {
+  color-scheme: light;
+  --paper: #fff6d8; --grid: #f4e6a9;
+  --pink: #ee2d73; --cyan: #1fb3d8; --navy: #2b2e8c; --ink: #1e1b4b;
+  --yellow: #ffc531; --coral: #f2553a; --green: #25a460; --purple: #7a4fd0;
+  --mint: #d9f5e4; --blush: #ffe1ea; --sky: #d6f1f9; --cream: #fffdf3; --white: #ffffff;
+  --muted: #5d5a86;
+  --px: "Pixelify Sans", "Press Start 2P", ui-monospace, "Courier New", monospace;
+  --ui: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --hand: "Caveat", "Segoe Script", "Comic Sans MS", cursive;
+  --ipa: "Gentium Plus", "Charis SIL", "Doulos SIL", "Noto Serif", "DejaVu Serif", Georgia, serif;
+}
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background-color: var(--paper); color: var(--ink); -webkit-tap-highlight-color: transparent; }
+body {
+  font: 600 16px/1.45 var(--ui);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 26px 26px;
+  min-height: 100%;
+}
+button { font-family: var(--ui); }
+:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+mark { background: var(--yellow); color: var(--ink); padding: 0 2px; border-radius: 4px; font-weight: 800; }
+
+#app { max-width: 520px; margin: 0 auto; padding: 14px 16px 36px; }
+body.has-sheet #app { padding-bottom: 48vh; }
+
+/* ---------- botões ---------- */
+.btn {
+  min-height: 50px; padding: 8px 16px; border: 3px solid var(--ink); border-radius: 14px;
+  background: var(--white); color: var(--ink); font-weight: 800; font-size: 16px; line-height: 1.2;
+  box-shadow: 3px 3px 0 var(--ink); cursor: pointer; touch-action: manipulation;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
+.btn:disabled { opacity: .4; cursor: default; box-shadow: none; }
+.btn.primary { background: var(--pink); color: var(--white); }
+.btn.cyan { background: var(--cyan); color: var(--ink); }
+.btn.yellow { background: var(--yellow); }
+.btn.ghost { background: transparent; box-shadow: none; }
+.btn.small { min-height: 40px; padding: 4px 12px; font-size: 14px; }
+
+/* ---------- menu ---------- */
+.hero { position: relative; padding: 18px 0 8px; text-align: left; }
+.banner {
+  display: inline-block; background: var(--cyan); color: var(--white); font: 700 15px/1 var(--px);
+  letter-spacing: .04em; text-transform: uppercase; padding: 8px 12px; border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.hero h1 {
+  margin: 14px 0 6px; font: 700 clamp(44px, 14vw, 64px)/.95 var(--px); color: var(--pink);
+  letter-spacing: .01em; text-transform: uppercase; max-width: 8.5em;
+}
+.hero .lead { margin: 0; max-width: 24em; font-weight: 700; color: var(--navy); }
+.hero .hand { font: 700 26px/1 var(--hand); color: var(--ink); margin: 10px 0 0; }
+.deco { position: absolute; pointer-events: none; }
+.deco.d1 { right: -4px; top: 8px; width: 74px; transform: rotate(14deg); }
+.deco.d2 { right: 46px; top: 96px; width: 44px; transform: rotate(-12deg); }
+.deco.d3 { right: 2px; top: 150px; width: 54px; transform: rotate(8deg); }
+
+.menu { display: grid; gap: 14px; margin: 18px 0 8px; padding: 0; list-style: none; }
+.mcard {
+  display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 14px; align-items: center; width: 100%;
+  text-align: left; padding: 12px; border: 3px solid var(--ink); border-radius: 18px; background: var(--white);
+  box-shadow: 5px 5px 0 var(--ink); cursor: pointer; color: inherit; text-decoration: none; touch-action: manipulation;
+}
+.mcard:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 var(--ink); }
+.tile {
+  width: 76px; height: 76px; border: 3px solid var(--ink); border-radius: 14px; display: grid; place-items: center;
+  color: var(--white); font: 400 40px/1 var(--ipa); overflow: hidden;
+}
+.tile svg { width: 100%; height: 100%; display: block; }
+.tile.t-cons { background: var(--pink); }
+.tile.t-vog { background: var(--yellow); color: var(--ink); }
+.tile.t-par { background: var(--cyan); color: var(--ink); font-size: 26px; font-family: var(--px); font-weight: 700; }
+.tile.t-alo { background: var(--purple); font-size: 28px; }
+.tile.t-ap { background: var(--coral); }
+.tile.t-pong { background: var(--green); }
+.mcard .tag { font: 700 12px/1 var(--px); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mcard h2 { margin: 4px 0 3px; font: 700 22px/1.05 var(--px); color: var(--navy); }
+.mcard p { margin: 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+.foot { margin: 18px 0 0; font-size: 13px; color: var(--muted); font-weight: 700; }
+
+/* ---------- jogo: cabeçalho e placar ---------- */
+.top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.top h2 { margin: 0; font: 700 20px/1.05 var(--px); color: var(--pink); text-align: center; text-transform: uppercase; }
+.help { width: 44px; padding: 0; font-family: var(--px); font-size: 20px; }
+.hud {
+  display: flex; align-items: flex-end; gap: 16px; margin: 12px 0; padding: 8px 12px;
+  background: var(--white); border: 3px solid var(--ink); border-radius: 14px;
+}
+.stat { display: flex; flex-direction: column; }
+.stat .k { font: 700 11px/1 var(--px); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stat b { font: 700 24px/1.1 var(--px); font-variant-numeric: tabular-nums; color: var(--navy); }
+.lives { margin-left: auto; display: flex; gap: 5px; padding-bottom: 4px; }
+.lives svg { width: 22px; height: 20px; display: block; }
+
+#stage { display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--white); border: 3px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 var(--ink); padding: 14px; }
+.lab { font: 700 12px/1 var(--px); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+.prompt { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 112px; }
+.sym { font: 400 52px/1 var(--ipa); text-align: center; white-space: nowrap; color: var(--pink); }
+.sym .br { color: var(--muted); font-size: 32px; }
+.word { font-size: 30px; font-weight: 800; margin: 4px 0; word-break: break-word; }
+.hint { font-size: 14px; color: var(--muted); font-weight: 700; }
+
+/* ---------- quadros ---------- */
+.chart { display: grid; gap: 4px; background: var(--white); border: 3px solid var(--ink); border-radius: 14px; padding: 8px; }
+.ch { font-size: 10.5px; line-height: 1.1; color: var(--muted); text-align: center; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 3px; min-height: 28px; font-weight: 800; }
+.rh { font-size: 12px; color: var(--muted); display: flex; align-items: center; font-weight: 800; }
+.cell {
+  height: 42px; padding: 0; border: 2px solid var(--ink); background: var(--cream); border-radius: 8px;
+  color: var(--pink); font: 400 17px/1 var(--ipa); cursor: pointer; touch-action: manipulation;
+}
+.chart.v .cell { height: 56px; font-size: 28px; }
+.chart.v .ch { font-size: 12px; }
+.chart.v .rh { font-size: 13px; }
+.cell.has { background: var(--mint); }
+.cell.sel { background: var(--yellow); box-shadow: 0 0 0 3px var(--ink); }
+.cell.bad { background: var(--blush); box-shadow: 0 0 0 3px var(--coral); }
+.cell.hintc { background: var(--mint); animation: pulse 1s ease-in-out 3; }
+.cell.pop { animation: pop .4s ease-out; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,164,96,0); } 50% { box-shadow: 0 0 0 5px rgba(37,164,96,.6); } }
+@keyframes pop { 0% { transform: scale(.7); } 60% { transform: scale(1.14); } 100% { transform: scale(1); } }
+
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choices { display: grid; gap: 12px; }
+
+.pair .words { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; text-align: center; margin: 14px 0 8px; }
+.pair .w { font-size: 32px; font-weight: 800; word-break: break-word; }
+.pair .sy { font: 400 22px/1.2 var(--ipa); color: var(--pink); min-height: 28px; }
+.pair .x { color: var(--muted); font: 700 24px var(--px); }
+.reveal { font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; min-height: 24px; font-weight: 700; }
+.diff { color: var(--pink); font-weight: 800; }
+
+/* ---------- aparelho fonador ---------- */
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 3px solid var(--ink); border-radius: 14px; overflow: hidden; background: var(--white); }
+.seg button { min-height: 44px; border: 0; background: transparent; font-weight: 800; font-size: 15px; color: var(--muted); cursor: pointer; }
+.seg button[aria-selected="true"] { background: var(--cyan); color: var(--ink); }
+.seg button + button { border-left: 3px solid var(--ink); }
+.anat { padding: 8px; }
+.anat svg { width: 100%; height: auto; display: block; max-height: 78vh; }
+.anat [data-part] { cursor: pointer; }
+.anat [data-part]:hover .sh { filter: brightness(1.06); }
+.anat .tgt .sh { stroke: var(--green); stroke-width: 4; }
+.anat .ring { fill: none; stroke-width: 4; stroke-dasharray: 7 5; }
+.anat .ring.good { stroke: var(--green); animation: spin 6s linear infinite; transform-origin: center; transform-box: fill-box; }
+.anat .ring.bad { stroke: var(--coral); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.qbox { font-size: 18px; font-weight: 800; line-height: 1.3; }
+.qbox .lab { display: block; margin-bottom: 6px; }
+
+/* ---------- folha inferior (resultado) ---------- */
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 520px; max-height: 46vh; z-index: 20;
+  background: var(--white); border: 3px solid var(--ink); border-bottom: 0; border-radius: 20px 20px 0 0;
+  display: flex; flex-direction: column; box-shadow: 0 -5px 0 var(--tone, var(--cyan));
+}
+.sheet[data-tone="good"] { --tone: var(--green); background: #f3fdf7; }
+.sheet[data-tone="bad"] { --tone: var(--coral); background: #fff4f6; }
+.sheet[data-tone="info"] { --tone: var(--cyan); }
+.sh-body { overflow-y: auto; padding: 14px 16px 6px; font-size: 15px; font-weight: 600; }
+.sh-body h3 { margin: 0 0 6px; font: 700 20px/1.1 var(--px); }
+.sheet[data-tone="good"] h3 { color: var(--green); }
+.sheet[data-tone="bad"] h3 { color: var(--coral); }
+.sheet[data-tone="info"] h3 { color: var(--navy); }
+.sh-body p { margin: 0 0 8px; }
+.sh-act { padding: 8px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+.sh-act .btn { width: 100%; }
+.traits { margin: 6px 0 4px; padding: 0; list-style: none; display: grid; gap: 7px; }
+.traits li { padding: 8px 10px; border: 2px solid var(--ink); border-radius: 10px; background: var(--white); font-size: 14px; }
+.traits li.miss { background: var(--blush); border-color: var(--coral); }
+.traits .k { display: block; font: 700 11px/1 var(--px); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.traits em { display: block; margin-top: 3px; font-style: normal; font-weight: 800; color: var(--coral); }
+.try { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: var(--sky); border: 2px dashed var(--navy); font-size: 14px; }
+.ipa { font-family: var(--ipa); font-weight: 700; }
+
+/* ---------- janelas ---------- */
+.overlay { position: fixed; inset: 0; background: rgba(30,27,75,.55); display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 30; overflow-y: auto; }
+.modal {
+  width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; background: var(--cream); border: 3px solid var(--ink);
+  border-radius: 20px; box-shadow: 6px 6px 0 var(--ink); padding: 20px 18px; display: flex; flex-direction: column; gap: 12px;
+}
+.modal h2 { margin: 0; font: 700 26px/1.05 var(--px); color: var(--pink); text-transform: uppercase; }
+.modal p { margin: 0; }
+.modal ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 15px; }
+.modal .def { padding: 10px 12px; border: 2px solid var(--ink); border-radius: 12px; background: var(--white); font-size: 15px; }
+.modal .def b { color: var(--navy); }
+.rec { font-size: 14px; color: var(--muted); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cell.hintc, .cell.pop, .anat .ring.good { animation: none; }
+  .btn { transition: none; }
+}
+@media (min-width: 560px) { .hero h1 { font-size: 68px; } }
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="candy" viewBox="0 0 80 50">
+    <path d="M2 8 L22 22 L22 28 L2 42 Z" fill="#ffc531" stroke="#1e1b4b" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M78 8 L58 22 L58 28 L78 42 Z" fill="#ffc531" stroke="#1e1b4b" stroke-width="3" stroke-linejoin="round"/>
+    <ellipse cx="40" cy="25" rx="22" ry="16" fill="#ee2d73" stroke="#1e1b4b" stroke-width="3"/>
+    <path d="M28 12 L38 38 M42 10 L52 38" stroke="#fff6d8" stroke-width="5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="lolli" viewBox="0 0 50 80">
+    <rect x="23" y="36" width="5" height="42" rx="2.5" fill="#fffdf3" stroke="#1e1b4b" stroke-width="3"/>
+    <circle cx="25" cy="24" r="20" fill="#1fb3d8" stroke="#1e1b4b" stroke-width="3"/>
+    <path d="M25 24 m0 0 a4 4 0 1 1 6 3 a9 9 0 1 1 -14 -4 a14 14 0 1 1 20 8" fill="none" stroke="#fffdf3" stroke-width="3.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="dice" viewBox="0 0 60 60">
+    <rect x="4" y="4" width="52" height="52" rx="10" fill="#fffdf3" stroke="#1e1b4b" stroke-width="3"/>
+    <g fill="#ee2d73"><circle cx="18" cy="18" r="5"/><circle cx="42" cy="18" r="5"/><circle cx="30" cy="30" r="5"/><circle cx="18" cy="42" r="5"/><circle cx="42" cy="42" r="5"/></g>
+  </symbol>
+</svg>
+
+<div id="app">
+  <section id="home">
+    <div class="hero">
+      <svg class="deco d1" aria-hidden="true"><use href="#candy"/></svg>
+      <svg class="deco d2" aria-hidden="true" viewBox="0 0 50 80"><use href="#lolli"/></svg>
+      <svg class="deco d3" aria-hidden="true"><use href="#dice"/></svg>
+      <span class="banner">Sons do português brasileiro</span>
+      <h1>Jogos de fonética</h1>
+      <p class="lead">Descubra como a boca faz cada som da nossa fala. Toque num jogo para começar.</p>
+      <p class="hand">Para participar, é só chegar!</p>
+    </div>
+    <ul class="menu" id="menu"></ul>
+    <p class="foot">Feito para a mostra Fonetic.on. Depois da primeira visita, funciona sem internet.</p>
+  </section>
+
+  <section id="game" hidden>
+    <header class="top">
+      <button class="btn small" id="backBtn" aria-label="Voltar ao menu">‹ Menu</button>
+      <h2 id="gTitle"></h2>
+      <button class="btn small help" id="helpBtn" aria-label="Entenda o jogo">?</button>
+    </header>
+    <div class="hud">
+      <div class="stat"><span class="k">Pontos</span><b id="score">0</b></div>
+      <div class="stat"><span class="k">Sequência</span><b id="streak">0</b></div>
+      <div class="stat"><span class="k" id="progK">Quadro</span><b id="prog">0/20</b></div>
+      <div class="lives" id="lives" role="img" aria-label="3 vidas"></div>
+    </div>
+    <main id="stage"></main>
+  </section>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sh-body" id="shBody"></div>
+  <div class="sh-act"><button class="btn primary" id="shBtn">Continuar</button></div>
+</div>
+<div class="overlay" id="overlay" hidden></div>
+
+<script id="data">
+// Palavras: o trecho entre { } é o som em destaque. Cada som tem várias palavras para variar as rodadas.
+
+// ---------- consoantes ----------
+const PLACES = [
+  { id: 'bilabial',    short: 'Bilab.',   name: 'bilabial' },
+  { id: 'labiodental', short: 'Labiod.',  name: 'labiodental' },
+  { id: 'alveolar',    short: 'Alveol.',  name: 'alveolar' },
+  { id: 'posalveolar', short: 'Pós-alv.', name: 'pós-alveolar' },
+  { id: 'palatal',     short: 'Palatal',  name: 'palatal' },
+  { id: 'velar',       short: 'Velar',    name: 'velar' }
+];
+const MANNERS = [
+  { id: 'oclusiva',  label: 'Oclusiva',  name: 'oclusiva' },
+  { id: 'africada',  label: 'Africada',  name: 'africada' },
+  { id: 'fricativa', label: 'Fricativa', name: 'fricativa' },
+  { id: 'nasal',     label: 'Nasal',     name: 'nasal' },
+  { id: 'lateral',   label: 'Lateral',   name: 'lateral' },
+  { id: 'tepe',      label: 'Tepe',      name: 'tepe' }
+];
+// s = símbolo, c = coluna (ponto), r = linha (modo), b = sonoridade (0 surda, 1 sonora), ws = palavras
+const AFR_NOTE = 'Em muitas variedades do português brasileiro, [tʃ] e [dʒ] aparecem no lugar de /t/ e /d/ antes de [i]. Nem todos os autores os tratam como alofones: confira como o seu livro os apresenta.';
+const PHONES = [
+  { s: 'p',  c: 'bilabial',    r: 'oclusiva',  b: 0, ws: ['{p}ato', '{p}ipoca', 'so{p}a', 'lu{p}a', '{p}ente'] },
+  { s: 'b',  c: 'bilabial',    r: 'oclusiva',  b: 1, ws: ['{b}ola', '{b}anana', 'ca{b}o', '{b}oneca', 'a{b}elha'] },
+  { s: 't',  c: 'alveolar',    r: 'oclusiva',  b: 0, ws: ['{t}apa', '{t}omate', 'pa{t}a', '{t}atu', 'bo{t}a'] },
+  { s: 'd',  c: 'alveolar',    r: 'oclusiva',  b: 1, ws: ['{d}ado', '{d}edo', 'ca{d}a', '{d}ona', 'mo{d}a'] },
+  { s: 'k',  c: 'velar',       r: 'oclusiva',  b: 0, ws: ['{c}asa', '{qu}eijo', 'fa{c}a', '{qu}ilo', 'sa{c}o'] },
+  { s: 'g',  c: 'velar',       r: 'oclusiva',  b: 1, ws: ['{g}ato', '{g}ula', '{gu}erra', 'fo{g}o', 'la{g}oa'] },
+  { s: 'tʃ', c: 'posalveolar', r: 'africada',  b: 0, ws: ['{t}ia', '{t}igre', 'lei{t}e', 'noi{t}e', 'pon{t}e'], note: AFR_NOTE },
+  { s: 'dʒ', c: 'posalveolar', r: 'africada',  b: 1, ws: ['{d}ia', '{d}inheiro', 'ver{d}e', 'tar{d}e', 'on{d}e'], note: AFR_NOTE },
+  { s: 'f',  c: 'labiodental', r: 'fricativa', b: 0, ws: ['{f}aca', '{f}oca', 'ca{f}é', 'tele{f}one', 'bi{f}e'] },
+  { s: 'v',  c: 'labiodental', r: 'fricativa', b: 1, ws: ['{v}aca', '{v}ela', 'ca{v}alo', 'u{v}a', 'la{v}ar'] },
+  { s: 's',  c: 'alveolar',    r: 'fricativa', b: 0, ws: ['{s}apo', 'pa{ss}o', 'ma{ç}ã', '{c}inema', '{s}opa'] },
+  { s: 'z',  c: 'alveolar',    r: 'fricativa', b: 1, ws: ['{z}ebra', 'a{z}ul', 'ca{s}a', 'ro{s}a', 'e{x}ame'] },
+  { s: 'ʃ',  c: 'posalveolar', r: 'fricativa', b: 0, ws: ['{ch}ave', '{ch}uva', 'ca{ch}orro', '{x}ícara', 'pei{x}e'] },
+  { s: 'ʒ',  c: 'posalveolar', r: 'fricativa', b: 1, ws: ['{j}aca', '{j}anela', '{g}elo', '{g}ente', 'laran{j}a'] },
+  { s: 'm',  c: 'bilabial',    r: 'nasal',     b: 1, ws: ['{m}ala', '{m}ão', 'ca{m}a', 'a{m}igo', 'la{m}a'] },
+  { s: 'n',  c: 'alveolar',    r: 'nasal',     b: 1, ws: ['{n}ata', '{n}uvem', 'ca{n}a', 'ba{n}ana', 'pe{n}a'] },
+  { s: 'ɲ',  c: 'palatal',     r: 'nasal',     b: 1, ws: ['ni{nh}o', 'vi{nh}o', 'ma{nh}ã', 'ara{nh}a', 'gali{nh}a'] },
+  { s: 'l',  c: 'alveolar',    r: 'lateral',   b: 1, ws: ['{l}ata', '{l}ua', 'ba{l}a', 'pe{l}o', 'sa{l}a'] },
+  { s: 'ʎ',  c: 'palatal',     r: 'lateral',   b: 1, ws: ['pa{lh}a', 'fi{lh}o', 'o{lh}o', 've{lh}o', 'mi{lh}o'],
+    note: 'Em muitas variedades, [ʎ] é pronunciado como [j]: "palha" soa como "paia".' },
+  { s: 'ɾ',  c: 'alveolar',    r: 'tepe',      b: 1, ws: ['ca{r}o', 'pe{r}a', 'a{r}ara', 'pu{r}o', 'ba{r}ata'],
+    note: 'O "r" forte (rato, carro) varia muito entre as variedades e fica fora deste quadro.' }
+];
+
+// ---------- vogais orais tônicas ----------
+const VCOLS = [
+  { id: 'anterior',  short: 'Anterior',  name: 'anterior' },
+  { id: 'central',   short: 'Central',   name: 'central' },
+  { id: 'posterior', short: 'Posterior', name: 'posterior' }
+];
+const VROWS = [
+  { id: 'fechada',     label: 'Fechada',     name: 'fechada' },
+  { id: 'semifechada', label: 'Semifechada', name: 'semifechada' },
+  { id: 'semiaberta',  label: 'Semiaberta',  name: 'semiaberta' },
+  { id: 'aberta',      label: 'Aberta',      name: 'aberta' }
+];
+const SEMI_NOTE = 'As semiabertas [ɛ] e [ɔ] só se distinguem de [e] e [o] em sílaba tônica (pé × pê, avó × avô). Em posição pretônica, o sistema tem cinco vogais; em final átona, três.';
+const VOWELS = [
+  { s: 'i', c: 'anterior',  r: 'fechada',     b: 0, ws: ['v{i}da', 'p{i}pa', 'l{i}vro', 'am{i}go', 'cam{i}nho'] },
+  { s: 'e', c: 'anterior',  r: 'semifechada', b: 0, ws: ['m{e}sa', 'p{ê}ra', 'voc{ê}', 'p{e}so', 'r{e}de'] },
+  { s: 'ɛ', c: 'anterior',  r: 'semiaberta',  b: 0, ws: ['caf{é}', 'p{é}', 't{e}rra', 'p{e}rna', 'b{e}la'], note: SEMI_NOTE },
+  { s: 'a', c: 'central',   r: 'aberta',      b: 0, ws: ['c{a}sa', 'l{a}ta', 's{a}po', 'p{á}', 'c{a}ma'] },
+  { s: 'ɔ', c: 'posterior', r: 'semiaberta',  b: 1, ws: ['av{ó}', 'p{ó}', 'n{o}ta', 'b{o}la', 's{o}l'], note: SEMI_NOTE },
+  { s: 'o', c: 'posterior', r: 'semifechada', b: 1, ws: ['av{ô}', 'b{o}lo', '{o}vo', 'f{o}go', 'p{o}vo'] },
+  { s: 'u', c: 'posterior', r: 'fechada',     b: 1, ws: ['{u}va', 'l{u}a', 'l{u}va', 't{u}do', 'az{u}l'],
+    note: 'No português brasileiro, as vogais posteriores são arredondadas e as anteriores e a central, não.' }
+];
+PHONES.forEach(p => { p.set = 'cons'; });
+VOWELS.forEach(p => { p.set = 'vog'; });
+
+// ---------- pares mínimos: cada par de sons difere em exatamente um traço ----------
+// words[i] = [palavra com o som a, palavra com o som b]
+const PAIRS = [
+  { a: 'f', b: 'v', words: [['{f}aca', '{v}aca'], ['{f}im', '{v}im'], ['{f}ila', '{v}ila'], ['{f}ez', '{v}ez']] },
+  { a: 'p', b: 'b', words: [['{p}ala', '{b}ala'], ['{p}asta', '{b}asta'], ['{p}ico', '{b}ico'], ['{p}ote', '{b}ote']] },
+  { a: 's', b: 'z', words: [['ca{ç}a', 'ca{s}a'], ['a{ss}a', 'a{s}a'], ['do{c}e', 'do{z}e'], ['{s}elo', '{z}elo']] },
+  { a: 'ʃ', b: 'ʒ', words: [['{ch}á', '{j}á'], ['{ch}ato', '{j}ato'], ['{ch}uta', '{j}uta'], ['a{ch}e', 'a{g}e']] },
+  { a: 'k', b: 'g', words: [['{c}ola', '{g}ola'], ['{c}ato', '{g}ato'], ['{c}alo', '{g}alo'], ['{c}ota', '{g}ota']] },
+  { a: 'b', b: 'd', words: [['{b}ata', '{d}ata'], ['{b}ois', '{d}ois'], ['{b}ar', '{d}ar']] },
+  { a: 'p', b: 't', words: [['{p}ala', '{t}ala'], ['{p}ão', '{t}ão'], ['{p}omba', '{t}omba'], ['{p}eça', '{t}eça']] },
+  { a: 'd', b: 'g', words: [['{d}ado', '{g}ado'], ['{d}oma', '{g}oma'], ['{d}ota', '{g}ota']] },
+  { a: 'f', b: 's', words: [['{f}aca', '{s}aca'], ['{f}ala', '{s}ala'], ['{f}im', '{s}im'], ['{f}ino', '{s}ino']] },
+  { a: 'm', b: 'b', words: [['{m}ala', '{b}ala'], ['{m}ola', '{b}ola'], ['{m}ico', '{b}ico'], ['{m}ar', '{b}ar']] },
+  { a: 'n', b: 'd', words: [['{n}ata', '{d}ata'], ['{n}ó', '{d}ó'], ['{n}ada', '{d}ada']] },
+  { a: 'l', b: 'ɾ', words: [['ca{l}a', 'ca{r}a'], ['ca{l}o', 'ca{r}o'], ['pa{l}a', 'pa{r}a'], ['mo{l}a', 'mo{r}a']] },
+  { a: 'n', b: 'l', words: [['{n}ata', '{l}ata'], ['{n}ua', '{l}ua'], ['{n}ado', '{l}ado']] },
+  { a: 'n', b: 'ɲ', words: [['mi{n}a', 'mi{nh}a'], ['so{n}o', 'so{nh}o'], ['ti{n}a', 'ti{nh}a']] },
+  { a: 'l', b: 'ʎ', words: [['ma{l}a', 'ma{lh}a'], ['fi{l}o', 'fi{lh}o'], ['ta{l}a', 'ta{lh}a'], ['pa{l}a', 'pa{lh}a']] },
+  { a: 's', b: 'ʃ', words: [['{s}eio', '{ch}eio'], ['{s}aga', '{ch}aga'], ['a{ss}a', 'a{ch}a']] },
+  { a: 't', b: 'k', words: [['{t}oco', '{c}oco'], ['{t}ara', '{c}ara'], ['{t}ola', '{c}ola']] },
+  { a: 'b', b: 'g', words: [['{b}ola', '{g}ola'], ['{b}ato', '{g}ato']] },
+  { a: 'z', b: 'ʒ', words: [['{z}elo', '{g}elo']] },
+  // vogais
+  { a: 'ɛ', b: 'e', words: [['p{é}', 'p{ê}'], ['s{é}', 's{ê}'], ['c{é}u', 's{e}u']] },
+  { a: 'e', b: 'i', words: [['v{ê}', 'v{i}'], ['l{ê}', 'l{i}'], ['v{e}r', 'v{i}r'], ['p{e}so', 'p{i}so']] },
+  { a: 'ɛ', b: 'i', words: [['m{e}l', 'm{i}l'], ['s{é}', 's{i}'], ['p{é}', 'p{i}']] },
+  { a: 'o', b: 'u', words: [['t{o}do', 't{u}do'], ['p{o}ro', 'p{u}ro'], ['c{o}ro', 'c{u}ro'], ['m{o}ro', 'm{u}ro']] },
+  { a: 'ɔ', b: 'o', words: [['av{ó}', 'av{ô}'], ['p{ó}', 'p{ô}'], ['f{o}rma', 'f{ô}rma']] },
+  { a: 'ɔ', b: 'u', words: [['b{o}la', 'b{u}la'], ['m{o}la', 'm{u}la'], ['f{o}ra', 'f{u}ra']] }
+];
+
+// ---------- fonema ou alofone? ans: fon | comp | livre ----------
+const ALLO = [
+  { ans: 'fon', sa: '[f]', sb: '[v]', pairs: [['{f}aca', '{v}aca'], ['{f}im', '{v}im'], ['{f}ez', '{v}ez']] },
+  { ans: 'fon', sa: '[ɛ]', sb: '[e]', pairs: [['p{é}', 'p{ê}'], ['s{é}', 's{ê}'], ['c{é}u', 's{e}u']],
+    extra: 'Esse contraste existe em sílaba tônica; nas átonas ele desaparece.' },
+  { ans: 'fon', sa: '[ɔ]', sb: '[o]', pairs: [['av{ó}', 'av{ô}'], ['p{ó}', 'p{ô}'], ['f{o}rma', 'f{ô}rma']] },
+  { ans: 'fon', sa: '[k]', sb: '[g]', pairs: [['{c}ola', '{g}ola'], ['{c}ato', '{g}ato'], ['{c}alo', '{g}alo']] },
+  { ans: 'fon', sa: '[ɾ]', sb: '“r” forte', pairs: [['ca{r}o', 'ca{rr}o'], ['e{r}a', 'e{rr}a'], ['fe{r}o', 'fe{rr}o']],
+    extra: 'Esse contraste só existe entre vogais. No fim da sílaba (porta, mar) os dois se misturam, e os estudiosos falam em arquifonema.' },
+  { ans: 'fon', sa: '[m]', sb: '[n]', pairs: [['{m}ão', '{n}ão'], ['{m}ata', '{n}ata'], ['{m}ó', '{n}ó']] },
+  { ans: 'fon', sa: '[s]', sb: '[z]', pairs: [['ca{ç}a', 'ca{s}a'], ['do{c}e', 'do{z}e'], ['a{ss}a', 'a{s}a']] },
+  { ans: 'fon', sa: '[p]', sb: '[b]', pairs: [['{p}ala', '{b}ala'], ['{p}ico', '{b}ico'], ['{p}asta', '{b}asta']] },
+  { ans: 'comp', sa: '[l]', sb: '[w]', pairs: [['{l}ata', 'sa{l}'], ['{l}ua', 'so{l}'], ['ba{l}a', 'ma{l}'], ['pe{l}o', 'pape{l}']],
+    ctx: 'em grande parte do Brasil, o "l" soa [l] no começo da sílaba (lata) e [w] no fim (sal soa como "sau").' },
+  { ans: 'comp', sa: '[tʃ]', sb: '[t]', pairs: [['{t}ia', 'pa{t}o'], ['pon{t}e', 'pon{t}a'], ['noi{t}e', '{t}apa'], ['{t}igre', '{t}omate']],
+    ctx: 'em muitas variedades, o "t" soa [tʃ] antes de [i] (tia, ponte) e [t] nos outros contextos (pato, ponta).',
+    extra: 'Atenção: nem todos os autores tratam [tʃ] como alofone de /t/. Veja como o seu livro apresenta.' },
+  { ans: 'comp', sa: '[dʒ]', sb: '[d]', pairs: [['{d}ia', '{d}ado'], ['on{d}e', 'on{d}a'], ['{d}inheiro', '{d}ono']],
+    ctx: 'em muitas variedades, o "d" soa [dʒ] antes de [i] (dia, onde) e [d] nos outros contextos (dado, onda).',
+    extra: 'Atenção: nem todos os autores tratam [dʒ] como alofone de /d/. Veja como o seu livro apresenta.' },
+  { ans: 'comp', sa: '[s]', sb: '[ʃ]', pairs: [['{s}apo', 'pa{s}ta'], ['{s}ala', 'fe{s}ta'], ['{s}eta', 'mê{s}']],
+    ctx: 'em variedades como a carioca, o "s" soa [s] no começo da sílaba e [ʃ] no fim (pasta soa "pachta").',
+    extra: 'Em outras variedades, o fim de sílaba também é [s], e aí não há essa alternância.' },
+  { ans: 'livre', sa: '[x]', sb: '[h]', pairs: [['{r}ato', '{r}ato'], ['{r}ua', '{r}ua'], ['ca{rr}o', 'ca{rr}o']],
+    ctx: 'no "r" forte você pode usar [x] (um som "raspado") ou [h] (um som "soprado") e a palavra continua a mesma.',
+    extra: 'A escolha costuma acompanhar a região e o falante.' },
+  { ans: 'livre', sa: '[ɾ]', sb: '[r]', pairs: [['p{r}ato', 'p{r}ato'], ['b{r}aço', 'b{r}aço'], ['t{r}ês', 't{r}ês']],
+    ctx: 'em muitas falas, o "r" depois de consoante pode ser uma batidinha [ɾ] ou uma vibração [r], sem mudar a palavra.' }
+];
+
+// ---------- explicações em linguagem simples ----------
+const TRAITS = {
+  cons: {
+    c: {
+      bilabial: 'Os dois lábios se encontram ou se aproximam.',
+      labiodental: 'O lábio de baixo encosta nos dentes de cima.',
+      alveolar: 'A ponta da língua toca ou chega perto dos alvéolos, a "gengiva" logo atrás dos dentes de cima.',
+      posalveolar: 'A língua se aproxima da região logo depois dos alvéolos, no começo do céu da boca.',
+      palatal: 'O meio da língua sobe até o palato duro, o "céu da boca".',
+      velar: 'O fundo da língua sobe até o palato mole (o "véu"), bem lá atrás.'
+    },
+    r: {
+      oclusiva: 'O ar é barrado por um instante e solto de uma vez, como uma pequena explosão.',
+      africada: 'Começa como oclusiva (o ar é barrado) e termina como fricativa (o ar sai com chiado).',
+      fricativa: 'O ar passa por uma fresta estreita e faz atrito: é o "chiado".',
+      nasal: 'O ar escapa pelo nariz, porque o véu do palato desce.',
+      lateral: 'A língua toca no meio da boca e o ar escapa pelos lados.',
+      tepe: 'A ponta da língua dá uma batidinha rápida, uma só, nos alvéolos.'
+    },
+    b: {
+      0: 'As pregas vocais não vibram. Teste: com a mão na garganta, você não sente vibração.',
+      1: 'As pregas vocais vibram. Teste: com a mão na garganta, você sente vibrar.'
+    }
+  },
+  vog: {
+    c: {
+      anterior: 'A parte da frente da língua é a que mais se eleva: a língua vai "para a frente".',
+      central: 'A língua fica no meio, sem avançar nem recuar.',
+      posterior: 'A parte de trás da língua se eleva: a língua fica "recuada".'
+    },
+    r: {
+      fechada: 'A língua fica bem alta e a boca quase fechada.',
+      semifechada: 'A língua fica um pouco mais baixa que na vogal fechada.',
+      semiaberta: 'A língua desce mais e a boca se abre mais.',
+      aberta: 'A língua fica baixa e a boca bem aberta.'
+    },
+    b: {
+      0: 'Os lábios ficam esticados ou relaxados, sem formar um "bico".',
+      1: 'Os lábios formam um círculo, um "bico".'
+    }
+  }
+};
+const GROUP = {
+  cons: { r: 'Modo de articulação', c: 'Ponto de articulação', b: 'Sonoridade' },
+  vog: { r: 'Altura', c: 'Anterioridade', b: 'Arredondamento' }
+};
+
+// ---------- aparelho fonador ----------
+// label = nome com artigo; cx, cy, rr = centro e raio do anel de destaque no desenho
+const PARTS = [
+  { id: 'labios', name: 'Lábios', label: 'os lábios', cx: 50, cy: 198, rr: 20,
+    what: 'Fecham, abrem e arredondam a boca. Formam os sons [p b m] e dão o "bico" de vogais como [u] e [o].',
+    tryit: 'Diga "papai" devagar e sinta os lábios se encontrando.',
+    clues: ['Eles se fecham para fazer [p], [b] e [m].', 'É a parte que faz o "bico" quando dizemos [u].'] },
+  { id: 'dentes', name: 'Dentes', label: 'os dentes', cx: 64, cy: 200, rr: 15,
+    what: 'Apoiam a língua e o lábio. Em [f] e [v], o lábio de baixo encosta nos dentes de cima.',
+    tryit: 'Diga "faca" e sinta o lábio tocando nos dentes.',
+    clues: ['Em [f] e [v], o lábio de baixo encosta nesta parte.', 'São brancos e duros, ficam na frente da boca e ajudam a fazer [f] e [v].'] },
+  { id: 'alveolos', name: 'Alvéolos', label: 'os alvéolos', cx: 86, cy: 176, rr: 15,
+    what: 'A saliência logo atrás dos dentes de cima. É onde a ponta da língua toca em [t d s z n l].',
+    tryit: 'Passe a língua atrás dos dentes de cima: a "gengiva" que você sente é aqui. Diga "tato".',
+    clues: ['É a gengiva de trás dos dentes de cima, onde a língua toca em [t] e [d].', 'A saliência logo atrás dos dentes de cima.'] },
+  { id: 'palatoduro', name: 'Palato duro', label: 'o palato duro', cx: 132, cy: 154, rr: 20,
+    what: 'A parte óssea do "céu da boca". O meio da língua sobe até aqui nos sons [ɲ] (ninho) e [ʎ] (palha).',
+    tryit: 'Deslize a ponta da língua para trás, pelo céu da boca: a parte dura é o palato duro. Diga "ninho".',
+    clues: ['Fica logo depois dos alvéolos e é dura, como um osso.', 'É a parte dura do céu da boca, onde o meio da língua encosta em "ninho" e "palha".'] },
+  { id: 'palatomole', name: 'Palato mole (véu)', label: 'o palato mole (véu palatino)', cx: 196, cy: 178, rr: 17,
+    what: 'A parte macia no fundo do céu da boca. Ela sobe e fecha a passagem para o nariz nos sons orais, e desce nos sons nasais. O fundo da língua toca aqui em [k] e [g].',
+    tryit: 'Continue deslizando a língua para trás, depois da parte dura: a parte macia é o véu. Diga "cá" e "gá".',
+    clues: ['Fica depois do palato duro e é macio.', 'Quando ele desce, o ar passa pelo nariz.'] },
+  { id: 'uvula', name: 'Úvula', label: 'a úvula (a "campainha")', cx: 214, cy: 208, rr: 13,
+    what: 'A "campainha" que pende no fim do véu palatino. Em algumas regiões, o "r" forte é feito perto daqui.',
+    tryit: 'Abra a boca na frente do espelho e diga "ah": a campainha aparece no fundo.',
+    clues: ['É a "campainha" que fica pendurada no fundo da boca.', 'Fica na ponta do palato mole.'] },
+  { id: 'ponta', name: 'Ponta da língua', label: 'a ponta da língua', cx: 88, cy: 208, rr: 15,
+    what: 'A parte da frente da língua. Ela faz [t d n l s z] e a batidinha do "r" fraco, o tepe [ɾ].',
+    tryit: 'Diga "lalala": a ponta da língua sobe e desce.',
+    clues: ['É a parte da língua que toca os alvéolos em [t] e [d].', 'Dá a batidinha rápida do "r" de "caro".'] },
+  { id: 'dorso', name: 'Dorso da língua', label: 'o dorso (meio) da língua', cx: 150, cy: 194, rr: 22,
+    what: 'O meio da língua. Ele sobe em direção ao céu da boca nas vogais [i] e [e] e nos sons [ɲ] e [ʎ].',
+    tryit: 'Diga "i" e depois "u": sinta a língua se mover para a frente e para trás.',
+    clues: ['É o "meio" da língua, que sobe em [i].', 'É a parte da língua que fica no meio e sobe em direção ao céu da boca.'] },
+  { id: 'raiz', name: 'Raiz da língua', label: 'a raiz da língua', cx: 204, cy: 240, rr: 17,
+    what: 'A parte de trás da língua, perto da garganta. Ela recua nas vogais de trás, como [u] e [o], e junto com o véu forma [k] e [g].',
+    tryit: 'Diga "u" e "o" e sinta a língua recuando.',
+    clues: ['É a parte da língua mais perto da garganta.', 'Fica no fundo da boca, na direção da faringe.'] },
+  { id: 'faringe', name: 'Faringe', label: 'a faringe', cx: 238, cy: 200, rr: 20,
+    what: 'O canal da garganta, atrás da língua. O som ressoa aqui como numa caixa de eco e ganha o seu timbre.',
+    tryit: 'Boceje e sinta a garganta se abrindo.',
+    clues: ['É o canal da garganta, atrás da língua.', 'Funciona como uma caixa de eco para a voz.'] },
+  { id: 'epiglote', name: 'Epiglote', label: 'a epiglote', cx: 223, cy: 252, rr: 13,
+    what: 'Uma "tampinha" de cartilagem. Ao engolir, ela fecha a entrada da laringe para a comida não ir para o pulmão. Não participa dos sons do português.',
+    tryit: 'Engula saliva e sinta a garganta subir: a epiglote está se fechando.',
+    clues: ['É a "tampinha" que protege o caminho do ar quando engolimos.', 'Fecha a entrada da laringe na hora de engolir.'] },
+  { id: 'laringe', name: 'Laringe e pregas vocais', label: 'a laringe (onde ficam as pregas vocais)', cx: 226, cy: 294, rr: 22,
+    what: 'Dentro dela ficam as pregas vocais. Quando vibram, o som é sonoro ([b d g] e as vogais); quando ficam abertas e paradas, o som é surdo ([p t k]).',
+    tryit: 'Mão na garganta (o "pomo de Adão" é a laringe): diga "zzz" e sinta vibrar; diga "sss" e não vibra.',
+    clues: ['Aqui as pregas vocais vibram nos sons sonoros.', 'É o "pomo de Adão", que você sente com a mão na garganta.'] },
+  { id: 'nariz', name: 'Cavidade nasal', label: 'a cavidade nasal (o nariz por dentro)', cx: 140, cy: 138, rr: 22,
+    what: 'O ar passa por aqui nos sons nasais, como [m], [n] e [ɲ], e nas vogais nasais, como em "lã".',
+    tryit: 'Aperte o nariz e diga "mamãe": o som muda, porque o ar não passa.',
+    clues: ['O ar passa por aqui em [m] e [n].', 'Se você tampa o nariz, "mamãe" soa diferente por causa dela.'] },
+  { id: 'pulmoes', name: 'Pulmões', label: 'os pulmões', cx: 226, cy: 430, rr: 52,
+    what: 'Fornecem o ar. Quase todos os sons do português saem com o ar que sobe dos pulmões quando você solta a respiração.',
+    tryit: 'Respire fundo e diga "aaa" até acabar o ar.',
+    clues: ['Eles fornecem o ar que vira som.', 'Ficam no peito e se enchem quando você inspira.'] },
+  { id: 'diafragma', name: 'Diafragma', label: 'o diafragma', cx: 226, cy: 482, rr: 28,
+    what: 'O músculo embaixo dos pulmões. Ele controla a respiração e ajuda a regular a força do ar na fala.',
+    tryit: 'Mão na barriga, diga "ha ha ha": você sente o diafragma trabalhar.',
+    clues: ['É o músculo que fica embaixo dos pulmões.', 'Ajuda a controlar a respiração enquanto falamos.'] }
+];
+// sons e a parte que mais trabalha neles (para a pergunta "qual parte faz o som?")
+const SOUND_Q = [
+  { s: '[p]', w: 'pato', part: 'labios' },
+  { s: '[m]', w: 'mala', part: 'labios' },
+  { s: '[f]', w: 'faca', part: 'dentes' },
+  { s: '[t]', w: 'tapa', part: 'alveolos' },
+  { s: '[ɲ]', w: 'ninho', part: 'palatoduro' },
+  { s: '[ʎ]', w: 'palha', part: 'palatoduro' },
+  { s: '[k]', w: 'casa', part: 'palatomole' },
+  { s: '[ɾ]', w: 'caro', part: 'ponta' },
+  { s: '[l]', w: 'lata', part: 'ponta' }
+];
+</script>
+<script id="art">
+// Desenho original em corte lateral: cabeça voltada para a esquerda, pescoço, traqueia, pulmões e diafragma.
+const ANAT_SVG = `
+<svg viewBox="0 0 360 510" role="img" aria-label="Corte lateral da cabeça, do pescoço e do peito mostrando o aparelho fonador">
+  <g stroke="#1e1b4b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tronco e pescoço -->
+    <path d="M96 36 C150 6 300 14 330 120 C342 180 322 226 302 250 L302 334 L196 334 L196 298
+             C160 292 120 280 96 270 C74 262 60 252 56 240 C52 230 56 222 62 218
+             C54 214 48 210 50 204 L54 200 C46 196 44 188 50 182 C56 176 62 172 60 168
+             C50 168 42 162 38 156 C30 148 42 128 60 108 C66 100 70 90 72 80 C72 62 80 46 96 36 Z" fill="#ffd7b5"/>
+
+    <path d="M196 328 L92 346 Q44 356 40 410 L40 504 L354 504 L354 410 Q350 356 306 346 L302 328 Z" fill="#ffe6cf" stroke="none"/>
+    <path d="M196 330 L92 346 Q44 356 40 410 L40 504 L354 504 L354 410 Q350 356 306 346 L302 330" fill="none"/>
+    <circle cx="80" cy="102" r="3.5" fill="#1e1b4b" stroke="none"/>
+
+    <!-- cavidade nasal -->
+    <g data-part="nariz"><path class="sh" d="M56 156 C60 136 94 128 130 128 C170 126 214 124 232 134 L232 160 C212 156 190 148 172 152 C140 138 104 150 80 166 C70 166 60 162 56 156 Z" fill="#bde9f6"/></g>
+
+    <!-- boca e faringe (fundo) -->
+    <g data-part="faringe">
+      <path class="sh" d="M60 184 Q84 172 96 178 Q132 148 172 166 Q200 164 214 192 L226 134 L252 134 L252 270 L220 270 Q150 276 100 262 Q66 246 62 218 Z" fill="#ffc9d1"/>
+      <rect x="226" y="136" width="24" height="120" fill="transparent" stroke="none"/>
+    </g>
+
+    <!-- alvéolos -->
+    <g data-part="alveolos">
+      <path class="sh" d="M70 184 Q76 166 96 172 Q100 180 98 188 Z" fill="#f5a3b1"/>
+      <path d="M70 184 Q76 166 96 172 Q100 180 98 188 Z" fill="transparent" stroke="transparent" stroke-width="16"/>
+    </g>
+    <!-- palato duro -->
+    <g data-part="palatoduro">
+      <path class="sh" d="M96 174 Q132 142 178 164 L178 176 Q132 154 98 192 Z" fill="#f7b9c3"/>
+      <path d="M96 174 Q132 142 178 164" fill="none" stroke="transparent" stroke-width="22"/>
+    </g>
+    <!-- palato mole -->
+    <g data-part="palatomole">
+      <path class="sh" d="M172 164 Q200 158 220 188 L212 204 Q196 184 172 178 Z" fill="#eb6f86"/>
+    </g>
+    <!-- úvula -->
+    <g data-part="uvula">
+      <path class="sh" d="M210 196 Q224 198 222 218 Q212 226 205 212 Z" fill="#eb6f86"/>
+      <path d="M210 196 Q224 198 222 218 Q212 226 205 212 Z" fill="transparent" stroke="transparent" stroke-width="16"/>
+    </g>
+
+    <!-- língua -->
+    <path d="M70 214 Q86 194 126 192 Q170 182 198 202 Q226 220 218 252 Q190 274 140 262 Q94 252 70 214 Z" fill="#f2557a"/>
+    <path d="M100 210 Q140 198 176 208" fill="none" stroke="#ffb3c4" stroke-width="3"/>
+    <g data-part="ponta"><ellipse cx="90" cy="208" rx="20" ry="14" fill="transparent" stroke="none"/></g>
+    <g data-part="dorso"><ellipse cx="148" cy="198" rx="30" ry="16" fill="transparent" stroke="none"/></g>
+    <g data-part="raiz"><ellipse cx="204" cy="238" rx="17" ry="24" fill="transparent" stroke="none"/></g>
+
+    <!-- epiglote -->
+    <g data-part="epiglote">
+      <path class="sh" d="M208 264 Q224 246 228 224 Q242 244 234 268 Z" fill="#e8607a"/>
+      <path d="M208 264 Q224 246 228 224 Q242 244 234 268 Z" fill="transparent" stroke="transparent" stroke-width="12"/>
+    </g>
+
+    <!-- dentes -->
+    <g data-part="dentes">
+      <rect class="sh" x="63" y="178" width="11" height="23" rx="3" fill="#ffffff"/>
+      <rect class="sh" x="62" y="204" width="11" height="20" rx="3" fill="#ffffff"/>
+    </g>
+    <!-- lábios -->
+    <g data-part="labios">
+      <path class="sh" d="M38 184 Q50 175 62 181 L62 198 Q50 200 42 196 Z" fill="#e8456b"/>
+      <path class="sh" d="M42 202 Q52 200 62 203 L61 219 Q52 225 45 212 Z" fill="#e8456b"/>
+    </g>
+
+    <!-- laringe e pregas vocais -->
+    <g data-part="laringe">
+      <path class="sh" d="M206 270 L246 270 L250 318 L202 318 Z" fill="#ffe08a"/>
+      <path d="M212 292 L226 296 L212 300 Z M240 292 L226 296 L240 300 Z" fill="#e5557a" stroke-width="2"/>
+    </g>
+    <!-- traqueia e brônquios -->
+    <rect x="208" y="318" width="36" height="62" fill="#a9d3f8"/>
+    <path d="M208 330 H244 M208 342 H244 M208 354 H244 M208 366 H244" stroke="#6fa7de" stroke-width="2.5" fill="none"/>
+    <path d="M226 378 L190 404 M226 378 L262 404" stroke="#a9d3f8" stroke-width="15" fill="none"/>
+
+    <!-- pulmões -->
+    <g data-part="pulmoes">
+      <path class="sh" d="M190 390 C142 384 106 408 108 442 C110 470 150 476 186 466 C200 452 200 416 190 390 Z" fill="#ff9fb5"/>
+      <path class="sh" d="M262 390 C310 384 346 408 344 442 C342 470 302 476 266 466 C252 452 252 416 262 390 Z" fill="#ff9fb5"/>
+    </g>
+    <!-- diafragma -->
+    <g data-part="diafragma">
+      <path d="M70 498 Q226 466 354 498" fill="none" stroke="#ffc531" stroke-width="12"/>
+      <path d="M70 498 Q226 466 354 498" fill="none" stroke="transparent" stroke-width="26"/>
+    </g>
+  </g>
+  <g id="anatRing"></g>
+</svg>`;
+</script>
+<script id="app">
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const ALL = Object.fromEntries(PHONES.concat(VOWELS).map(p => [p.s, p]));
+  const PARTBY = Object.fromEntries(PARTS.map(p => [p.id, p]));
+  const ROUNDS = 10, LIVES = 3, SAVE = 'jogos-de-fonetica-v2';
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- utilidades ----------
+  const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const mk = s => s.split(/(\{[^}]*\})/).map(t => (t[0] === '{' ? '<mark>' + esc(t.slice(1, -1)) + '</mark>' : esc(t))).join('');
+  const plain = s => s.replace(/[{}]/g, '');
+  const marked = s => { const m = /\{([^}]*)\}/.exec(s); return m ? m[1] : ''; };
+  const br = s => '[' + s + ']';
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const div = (cls, txt) => { const e = document.createElement('div'); e.className = cls; if (txt) e.textContent = txt; return e; };
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+  const SETS = {
+    cons: { items: PHONES, cols: PLACES, rows: MANNERS, bin: ['Surda', 'Sonora'], noun: 'consoante', rowW: '66px' },
+    vog:  { items: VOWELS, cols: VCOLS, rows: VROWS, bin: ['Não arredondada', 'Arredondada'], noun: 'vogal', rowW: '84px' }
+  };
+  const binWord = (set, v) => (set === 'cons' ? (v ? 'sonora' : 'surda') : (v ? 'arredondada' : 'não arredondada'));
+  const rowName = (set, id) => SETS[set].rows.find(x => x.id === id).name;
+  const colName = (set, id) => SETS[set].cols.find(x => x.id === id).name;
+  const valName = (set, k, p) => (k === 'r' ? rowName(set, p.r) : k === 'c' ? colName(set, p.c) : binWord(set, p.b));
+  const describe = p => SETS[p.set].noun + ' ' + rowName(p.set, p.r) + ' ' + colName(p.set, p.c) + ' ' + binWord(p.set, p.b);
+
+  const MODES = {
+    cons: { tag: 'Fonética', head: 'Consoantes', tile: 'ʃ', cls: 't-cons', desc: 'Onde cada consoante "mora" no quadro dos sons? Toque na célula certa.' },
+    vog:  { tag: 'Fonética', head: 'Vogais', tile: 'ɛ', cls: 't-vog', desc: 'Sua língua sobe, desce, avança ou recua? Descubra onde fica cada vogal.' },
+    par:  { tag: 'Fonologia', head: 'Par mínimo', tile: 'f≠v', cls: 't-par', desc: 'Duas palavras, só um som diferente. Qual característica mudou?' },
+    alo:  { tag: 'Fonologia', head: 'Fonema ou alofone', tile: '/t/', cls: 't-alo', desc: 'Dois sons: eles trocam a palavra ou são só duas formas do mesmo som?' },
+    ap:   { tag: 'Anatomia', head: 'Aparelho fonador', tile: '', cls: 't-ap', desc: 'Da boca ao pulmão: toque nas partes do corpo que produzem a fala.' }
+  };
+  const ORDER = ['cons', 'vog', 'par', 'alo', 'ap'];
+  const APIC = '<svg viewBox="0 0 76 76" aria-hidden="true"><path d="M26 10 C42 2 62 8 68 28 C72 44 64 54 58 58 L58 76 L38 76 L38 62 C28 60 20 56 18 50 C16 46 18 44 20 42 C14 41 12 38 14 36 L16 34 C12 32 14 28 16 26 C18 22 22 18 24 16 C22 14 22 12 26 10 Z" fill="#ffd7b5" stroke="#1e1b4b" stroke-width="3" stroke-linejoin="round"/><path d="M24 40 Q34 34 46 38 Q52 42 48 48 Q36 52 24 44 Z" fill="#f2557a" stroke="#1e1b4b" stroke-width="2.5" stroke-linejoin="round"/></svg>';
+
+  // ---------- recordes e avisos (por aparelho) ----------
+  let store = {};
+  try { store = JSON.parse(localStorage.getItem(SAVE)) || {}; } catch (e) { store = {}; }
+  store.best = store.best || {}; store.seen = store.seen || {};
+  ORDER.forEach(m => { store.best[m] = store.best[m] || { n: 0, score: 0 }; });
+  const persist = () => { try { localStorage.setItem(SAVE, JSON.stringify(store)); } catch (e) {} };
+
+  // ---------- som ----------
+  let ac = null;
+  function ensureAudio() {
+    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    if (ac && ac.state === 'suspended') ac.resume();
+  }
+  function tone(f, d, delay) {
+    if (!ac) return;
+    const t = ac.currentTime + (delay || 0), o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'triangle'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.06, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d);
+  }
+  const good = () => { tone(660, 0.1); tone(880, 0.14, 0.09); };
+  const bad = () => { tone(180, 0.22); if (navigator.vibrate) navigator.vibrate(30); };
+  document.addEventListener('pointerdown', ensureAudio);
+
+  // ---------- estado ----------
+  const G = { mode: null, set: 'cons', score: 0, streak: 0, lives: LIVES, phase: 'idle', placed: new Set(), cur: null, word: '',
+              last: null, sel: null, round: 0, hits: 0, pair: null, recent: [], deck: [], item: null, sub: 'explore', apq: null, apRecent: [], lastW: {} };
+  const isQuadro = () => G.mode === 'cons' || G.mode === 'vog';
+  const stage = $('#stage'), overlay = $('#overlay');
+
+  // ---------- folha inferior ----------
+  let sheetFn = null;
+  function openSheet(tone, html, label, fn) {
+    const sh = $('#sheet');
+    sh.dataset.tone = tone; $('#shBody').innerHTML = html; $('#shBtn').textContent = label; sheetFn = fn;
+    sh.hidden = false; document.body.classList.add('has-sheet'); $('#shBody').scrollTop = 0;
+  }
+  function closeSheet() { $('#sheet').hidden = true; document.body.classList.remove('has-sheet'); sheetFn = null; }
+  $('#shBtn').addEventListener('click', () => { const f = sheetFn; closeSheet(); if (f) f(); });
+  function reveal(el) {
+    if (!el) return;
+    requestAnimationFrame(() => {
+      const sh = $('#sheet'), visible = window.innerHeight - (sh.hidden ? 0 : sh.offsetHeight);
+      const r = el.getBoundingClientRect(), d = r.top + r.height / 2 - visible / 2;
+      if (Math.abs(d) > 24) window.scrollBy({ top: d, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
+  // ---------- placar ----------
+  const HEART = (() => {
+    const g = ['011000110', '111101111', '111111111', '111111111', '011111110', '001111100', '000111000', '000010000'];
+    let r = '';
+    g.forEach((row, y) => { for (let x = 0; x < 9; x++) if (row[x] === '1') r += '<rect x="' + x + '" y="' + y + '" width="1.02" height="1.02"/>'; });
+    return r;
+  })();
+  const heart = on => '<svg viewBox="0 0 9 8" shape-rendering="crispEdges" fill="' + (on ? '#f2553a' : '#f4d9d3') + '" aria-hidden="true">' + HEART + '</svg>';
+  function renderHUD() {
+    $('#score').textContent = G.score; $('#streak').textContent = G.streak;
+    if (isQuadro()) { $('#progK').textContent = 'Quadro'; $('#prog').textContent = G.placed.size + '/' + SETS[G.set].items.length; }
+    else if (G.mode === 'ap' && G.sub === 'explore') { $('#progK').textContent = 'Modo'; $('#prog').textContent = '—'; }
+    else { $('#progK').textContent = 'Rodada'; $('#prog').textContent = Math.min(G.round, ROUNDS) + '/' + ROUNDS; }
+    let h = ''; for (let i = 0; i < LIVES; i++) h += heart(i < G.lives);
+    $('#lives').innerHTML = h;
+    $('#lives').setAttribute('aria-label', G.lives + (G.lives === 1 ? ' vida' : ' vidas'));
+  }
+
+  // ---------- explicação dos traços ----------
+  function traitList(p, picked) {
+    const T = TRAITS[p.set], S = SETS[p.set];
+    return '<ul class="traits">' + ['r', 'c', 'b'].map(k => {
+      const val = valName(p.set, k, p), text = T[k][k === 'b' ? p.b : p[k]];
+      const wrong = picked && picked[k] !== p[k];
+      let pn = '';
+      if (wrong) pn = k === 'b' ? binWord(p.set, picked.b) : (k === 'r' ? rowName(p.set, picked.r) : colName(p.set, picked.c));
+      return '<li' + (wrong ? ' class="miss"' : '') + '><span class="k">' + GROUP[p.set][k] + '</span><b>' + esc(cap(val)) + '.</b> ' + esc(text) +
+        (wrong ? '<em>Você escolheu: ' + esc(pn) + '.</em>' : '') + '</li>';
+    }).join('') + '</ul>';
+  }
+
+  // ---------- jogos 1 e 2: quadro (consoantes / vogais) ----------
+  function buildQuadro() {
+    const S = SETS[G.set];
+    stage.innerHTML =
+      '<section class="card prompt"><div class="sym" id="sym" aria-live="polite"></div>' +
+      '<div><span class="lab">Som destacado</span><div class="word" id="word"></div><div class="hint" id="qhint"></div></div></section>' +
+      '<div class="chart' + (G.set === 'vog' ? ' v' : '') + '" id="chart"></div>' +
+      '<div class="actions" id="vact"><button class="btn cyan" data-v="0" disabled>' + S.bin[0] + '</button>' +
+      '<button class="btn cyan" data-v="1" disabled>' + S.bin[1] + '</button></div>';
+    const chart = $('#chart');
+    chart.style.gridTemplateColumns = S.rowW + ' repeat(' + S.cols.length + ', minmax(0, 1fr))';
+    chart.appendChild(div('corner'));
+    S.cols.forEach(p => chart.appendChild(div('ch', p.short)));
+    S.rows.forEach(m => {
+      chart.appendChild(div('rh', m.label));
+      S.cols.forEach(p => {
+        const b = document.createElement('button');
+        b.className = 'cell'; b.dataset.c = p.id; b.dataset.r = m.id; b.setAttribute('aria-label', m.label + ', ' + p.name);
+        chart.appendChild(b);
+      });
+    });
+  }
+  function renderChart() {
+    const S = SETS[G.set];
+    $$('.cell').forEach(c => {
+      const syms = S.items.filter(p => p.c === c.dataset.c && p.r === c.dataset.r && G.placed.has(p.s)).map(p => p.s);
+      c.textContent = syms.join(' ');
+      c.className = 'cell' + (syms.length ? ' has' : '') + (G.sel && G.sel.c === c.dataset.c && G.sel.r === c.dataset.r ? ' sel' : '');
+    });
+  }
+  const markCell = (pos, cls) => { const c = document.querySelector('.cell[data-c="' + pos.c + '"][data-r="' + pos.r + '"]'); if (c) c.classList.add(cls); return c; };
+
+  function pickWord(p) {
+    const opts = p.ws.filter(w => w !== G.lastW[p.s]);
+    const w = pick(opts.length ? opts : p.ws); G.lastW[p.s] = w; return w;
+  }
+  function askQuadro() {
+    const S = SETS[G.set], open = S.items.filter(p => !G.placed.has(p.s));
+    if (!open.length) return endGame(true);
+    const pool = open.filter(p => p.s !== G.last);
+    G.cur = pick(pool.length ? pool : open); G.word = pickWord(G.cur);
+    G.sel = null; G.phase = 'answer';
+    $('#sym').innerHTML = '<span class="br">[</span>' + esc(G.cur.s) + '<span class="br">]</span>';
+    $('#word').innerHTML = mk(G.word);
+    $('#qhint').textContent = 'Onde ele fica no quadro? Depois escolha o último traço.';
+    $$('#vact button').forEach(b => { b.disabled = true; });
+    renderChart(); renderHUD();
+  }
+  function chooseCell(cell) {
+    if (!isQuadro() || G.phase !== 'answer') return;
+    const S = SETS[G.set];
+    G.sel = { c: cell.dataset.c, r: cell.dataset.r };
+    $$('#vact button').forEach(b => { b.disabled = false; });
+    $('#qhint').innerHTML = 'Você escolheu <b>' + rowName(G.set, G.sel.r) + ' × ' + colName(G.set, G.sel.c) + '</b>. Agora: ' + S.bin[0].toLowerCase() + ' ou ' + S.bin[1].toLowerCase() + '?';
+    renderChart();
+  }
+  function answerQuadro(v) {
+    if (G.phase !== 'answer' || !G.sel) return;
+    const c = G.cur, S = SETS[G.set];
+    const picked = { c: G.sel.c, r: G.sel.r, b: v };
+    const cellOK = picked.c === c.c && picked.r === c.r, ok = cellOK && v === c.b;
+    G.phase = 'feedback'; G.last = c.s;
+    const spelled = marked(G.word);
+    let html;
+    if (ok) {
+      G.placed.add(c.s); G.score += 10 + Math.min(G.streak, 5) * 2; G.streak++; G.sel = null; good();
+      html = '<h3>Certo!</h3><p><span class="ipa">' + br(c.s) + '</span> é uma <b>' + describe(c) + '</b>, como em <b>' + mk(G.word) + '</b>.</p>' + traitList(c, null);
+    } else {
+      G.streak = 0; G.lives--; bad();
+      html = '<h3>Quase!</h3><p><span class="ipa">' + br(c.s) + '</span> é uma <b>' + describe(c) + '</b>, como em <b>' + mk(G.word) + '</b>. Veja o que cada característica quer dizer:</p>' + traitList(c, picked);
+    }
+    if (spelled.length > 1) html += '<p>Repare: as letras <b>' + esc(spelled) + '</b> representam um único som.</p>';
+    if (c.note) html += '<div class="try">' + esc(c.note) + '</div>';
+    renderChart();
+    let target;
+    if (ok) target = markCell(c, 'pop'); else { markCell(picked, 'bad'); target = markCell(c, 'hintc'); }
+    renderHUD();
+    openSheet(ok ? 'good' : 'bad', html, 'Continuar', next);
+    reveal(target);
+  }
+
+  // ---------- jogo 3: par mínimo ----------
+  const FEATS = {
+    cons: [{ k: 'b', btn: 'Sonoridade', at: 'na sonoridade' }, { k: 'c', btn: 'Ponto de articulação', at: 'no ponto de articulação' }, { k: 'r', btn: 'Modo de articulação', at: 'no modo de articulação' }],
+    vog: [{ k: 'r', btn: 'Altura', at: 'na altura' }, { k: 'c', btn: 'Anterioridade', at: 'na anterioridade' }, { k: 'b', btn: 'Arredondamento', at: 'no arredondamento' }]
+  };
+  function buildPar() {
+    stage.innerHTML =
+      '<section class="card pair"><div class="lab">O que diferencia os sons destacados?</div>' +
+      '<div class="words"><div class="w" id="wa"></div><div class="x">×</div><div class="w" id="wb"></div></div>' +
+      '<div class="reveal" id="reveal"></div></section><div class="choices" id="vact"></div>';
+  }
+  function askPar() {
+    if (G.round >= ROUNDS) return endGame(true);
+    let g, tries = 0;
+    do { g = pick(PAIRS); tries++; } while (G.recent.includes(g.a + g.b) && tries < 30);
+    G.recent.push(g.a + g.b); if (G.recent.length > 5) G.recent.shift();
+    const w = pick(g.words), flip = Math.random() < 0.5;
+    G.pair = flip ? { a: g.b, b: g.a, wa: w[1], wb: w[0] } : { a: g.a, b: g.b, wa: w[0], wb: w[1] };
+    G.round++; G.phase = 'answer';
+    $('#wa').innerHTML = mk(G.pair.wa); $('#wb').innerHTML = mk(G.pair.wb);
+    $('#reveal').textContent = 'Compare os trechos em destaque. Em que eles diferem?';
+    const set = ALL[G.pair.a].set;
+    $('#vact').innerHTML = FEATS[set].map(f => '<button class="btn cyan" data-f="' + f.k + '">' + f.btn + '</button>').join('');
+    renderHUD();
+  }
+  function answerPar(f) {
+    if (G.phase !== 'answer') return;
+    const P = G.pair, A = ALL[P.a], B = ALL[P.b], set = A.set, T = TRAITS[set];
+    const k = ['b', 'c', 'r'].filter(key => A[key] !== B[key])[0], ok = f === k;
+    G.phase = 'feedback';
+    if (ok) { G.score += 10 + Math.min(G.streak, 5) * 2; G.streak++; G.hits++; good(); } else { G.streak = 0; G.lives--; bad(); }
+    const val = (p, key) => valName(set, key, p), txt = (p, key) => T[key][key === 'b' ? p.b : p[key]];
+    const shared = ['r', 'c', 'b'].filter(x => x !== k).map(x => val(A, x)).join(', ');
+    const at = FEATS[set].find(x => x.k === k).at;
+    let html = '<h3>' + (ok ? 'Certo!' : 'Quase!') + '</h3>' +
+      '<p>Em <b>' + esc(plain(P.wa)) + ' × ' + esc(plain(P.wb)) + '</b>, só um som muda: <span class="ipa">' + br(P.a) + '</span> por <span class="ipa">' + br(P.b) + '</span>. ' +
+      (ok ? '' : 'Você escolheu outra característica. ') + 'A diferença está <b>' + at + '</b>.</p>' +
+      '<ul class="traits"><li><span class="k">' + br(P.a) + ' · ' + GROUP[set][k] + '</span><b>' + esc(cap(val(A, k))) + '.</b> ' + esc(txt(A, k)) + '</li>' +
+      '<li><span class="k">' + br(P.b) + ' · ' + GROUP[set][k] + '</span><b>' + esc(cap(val(B, k))) + '.</b> ' + esc(txt(B, k)) + '</li></ul>' +
+      '<p>O que os dois sons têm em comum: <b>' + esc(shared) + '</b>. Por isso a troca muda a palavra e mostra que esses sons são importantes na língua.</p>';
+    $('#reveal').innerHTML = '<div><span class="diff">' + br(P.a) + '</span> ' + esc(describe(A)) + '</div><div><span class="diff">' + br(P.b) + '</span> ' + esc(describe(B)) + '</div>';
+    renderHUD();
+    openSheet(ok ? 'good' : 'bad', html, 'Continuar', next);
+  }
+
+  // ---------- jogo 4: fonema ou alofone ----------
+  const ALO_LABEL = { fon: 'Fonemas diferentes', comp: 'Alofones: distribuição complementar', livre: 'Alofones: variação livre' };
+  function buildAlo() {
+    const side = id => '<div><div class="w" id="w' + id + '"></div><div class="sy" id="s' + id + '"></div></div>';
+    stage.innerHTML =
+      '<section class="card pair"><div class="lab">Esses dois sons são…</div><div class="words">' + side('a') + '<div class="x">×</div>' + side('b') + '</div>' +
+      '<div class="reveal" id="reveal"></div></section>' +
+      '<div class="choices" id="vact"><button class="btn cyan" data-a="fon">' + ALO_LABEL.fon + '</button>' +
+      '<button class="btn cyan" data-a="comp">' + ALO_LABEL.comp + '</button><button class="btn cyan" data-a="livre">' + ALO_LABEL.livre + '</button></div>';
+  }
+  function askAlo() {
+    if (G.round >= Math.min(ROUNDS, G.deck.length)) return endGame(true);
+    const it = G.deck[G.round], w = pick(it.pairs);
+    G.item = { it: it, wa: w[0], wb: w[1] }; G.round++; G.phase = 'answer';
+    $('#wa').innerHTML = mk(w[0]); $('#wb').innerHTML = mk(w[1]);
+    $('#sa').textContent = it.sa; $('#sb').textContent = it.sb;
+    $('#reveal').textContent = 'Eles trocam a palavra? Aparecem em lugares diferentes? Alternam à vontade?';
+    renderHUD();
+  }
+  function whyAlo(it, wa, wb) {
+    if (it.ans === 'fon')
+      return '<p>Faça o <b>teste da troca</b>: trocando ' + esc(it.sa) + ' por ' + esc(it.sb) + ', <b>' + esc(plain(wa)) + '</b> vira <b>' + esc(plain(wb)) + '</b> e o significado muda. Quando a troca muda a palavra, os sons são <b>fonemas diferentes</b>.</p>';
+    if (it.ans === 'comp')
+      return '<p><b>Distribuição complementar:</b> ' + esc(it.ctx) + ' Cada som tem o seu lugar e eles nunca disputam o mesmo contexto, nem mudam o significado. Por isso são <b>alofones</b> (variantes) do mesmo fonema.</p>';
+    return '<p><b>Variação livre:</b> ' + esc(it.ctx) + ' Trocar um pelo outro não muda o significado e os dois podem aparecer no mesmo lugar. São <b>alofones</b> do mesmo fonema.</p>';
+  }
+  function answerAlo(a) {
+    if (G.phase !== 'answer') return;
+    const { it, wa, wb } = G.item, ok = a === it.ans;
+    G.phase = 'feedback';
+    if (ok) { G.score += 10 + Math.min(G.streak, 5) * 2; G.streak++; G.hits++; good(); } else { G.streak = 0; G.lives--; bad(); }
+    let html = '<h3>' + (ok ? 'Certo!' : 'Quase!') + '</h3><p>Resposta: <b>' + ALO_LABEL[it.ans] + '</b>.</p>' + whyAlo(it, wa, wb);
+    if (it.extra) html += '<div class="try">' + esc(it.extra) + '</div>';
+    html += '<p>Resumindo: <b>fonema</b> é o som que distingue palavras; <b>alofone</b> é uma forma diferente de pronunciar o mesmo fonema.</p>';
+    renderHUD();
+    openSheet(ok ? 'good' : 'bad', html, 'Continuar', next);
+  }
+
+  // ---------- jogo 5: aparelho fonador ----------
+  const ALT = { '[t]': ['ponta'], '[ɾ]': ['alveolos'], '[l]': ['alveolos'], '[k]': ['dorso', 'raiz'], '[ɲ]': ['dorso'], '[ʎ]': ['dorso'], '[f]': ['labios'] };
+  function buildAp() {
+    stage.innerHTML =
+      '<div class="seg" role="tablist"><button data-sub="explore" aria-selected="true">Explorar</button><button data-sub="play" aria-selected="false">Jogar</button></div>' +
+      '<section class="card qbox" id="apQ"></section><section class="card anat" id="anat">' + ANAT_SVG + '</section>';
+  }
+  const clearRings = () => { $('#anatRing').innerHTML = ''; $$('.tgt').forEach(e => e.classList.remove('tgt')); };
+  function addRing(id, cls) {
+    const p = PARTBY[id], NS = 'http://www.w3.org/2000/svg', c = document.createElementNS(NS, 'circle');
+    c.setAttribute('class', 'ring ' + cls); c.setAttribute('cx', p.cx); c.setAttribute('cy', p.cy); c.setAttribute('r', p.rr);
+    $('#anatRing').appendChild(c);
+    if (cls === 'good') { const g = document.querySelector('#anat [data-part="' + id + '"]'); if (g) g.classList.add('tgt'); }
+    return c;
+  }
+  function partSheetHtml(p, lead) {
+    return '<h3>' + esc(p.name) + '</h3>' + (lead || '') + '<p>' + esc(p.what) + '</p><div class="try"><b>Experimente:</b> ' + esc(p.tryit) + '</div>';
+  }
+  function setSub(sub) {
+    G.sub = sub; closeSheet(); clearRings();
+    $$('.seg button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.sub === sub)));
+    Object.assign(G, { score: 0, streak: 0, lives: LIVES, round: 0, hits: 0, phase: 'idle', apRecent: [], apq: null });
+    if (sub === 'explore') {
+      $('#apQ').innerHTML = '<span class="lab">Modo explorar</span>Toque numa parte do desenho para ver o nome e o que ela faz. Quando estiver pronto, vá para <b>Jogar</b>.';
+      renderHUD();
+    } else { renderHUD(); askAp(); }
+  }
+  function askAp() {
+    if (G.round >= ROUNDS) return endGame(true);
+    clearRings();
+    let q, tries = 0;
+    do {
+      const t = pick(['nome', 'pista', 'som']);
+      if (t === 'som') { const s = pick(SOUND_Q); q = { t: t, id: s.part, s: s }; }
+      else { const p = pick(PARTS); q = { t: t, id: p.id, p: p, clue: pick(p.clues) }; }
+      tries++;
+    } while (G.apRecent.includes(q.id) && tries < 30);
+    G.apRecent.push(q.id); if (G.apRecent.length > 5) G.apRecent.shift();
+    G.apq = q; G.round++; G.phase = 'answer';
+    const t = PARTBY[q.id];
+    if (q.t === 'nome') $('#apQ').innerHTML = '<span class="lab">Onde fica?</span>Encontre <b>' + esc(t.label) + '</b> no desenho e toque.';
+    else if (q.t === 'pista') $('#apQ').innerHTML = '<span class="lab">Pista</span>' + esc(q.clue) + ' Qual é a parte?';
+    else $('#apQ').innerHTML = '<span class="lab">Som</span>Para falar <span class="ipa">' + esc(q.s.s) + '</span>, como em <b>' + esc(q.s.w) + '</b>, qual parte faz o trabalho principal?';
+    renderHUD();
+  }
+  function tapPart(id) {
+    if (G.sub === 'explore') {
+      clearRings(); addRing(id, 'good');
+      const p = PARTBY[id];
+      openSheet('info', partSheetHtml(p), 'Fechar', clearRings);
+      reveal($('#anatRing').lastChild); return;
+    }
+    if (G.phase !== 'answer') return;
+    const q = G.apq, acc = [q.id].concat(q.t === 'som' ? (ALT[q.s.s] || []) : []);
+    const ok = acc.includes(id), target = PARTBY[q.id], got = PARTBY[id];
+    G.phase = 'feedback'; clearRings();
+    if (ok) { G.score += 10 + Math.min(G.streak, 5) * 2; G.streak++; G.hits++; good(); } else { G.streak = 0; G.lives--; bad(); }
+    const ring = addRing(q.id, 'good');
+    let html;
+    if (ok) html = partSheetHtml(target, q.t === 'som' ? '<p>Isso mesmo! Em <span class="ipa">' + esc(q.s.s) + '</span>, a parte que mais trabalha é: <b>' + esc(target.name) + '</b>.</p>' : '<p>Isso mesmo!</p>');
+    else {
+      addRing(id, 'bad');
+      html = '<h3>Quase!</h3><p>Você tocou em <b>' + esc(got.name) + '</b>. ' + esc(got.what.split('. ')[0]) + '.</p><p>A resposta é <b>' + esc(target.label) + '</b>.</p>' +
+        '<p>' + esc(target.what) + '</p><div class="try"><b>Experimente:</b> ' + esc(target.tryit) + '</div>';
+    }
+    renderHUD();
+    openSheet(ok ? 'good' : 'bad', html, 'Continuar', next);
+    reveal(ring);
+  }
+
+  // ---------- entenda ----------
+  const HELP = {
+    cons: '<p>Cada consoante tem um "endereço" no quadro. As <b>colunas</b> dizem <b>onde</b>, as <b>linhas</b> dizem <b>como</b>, e o último traço diz se a garganta vibra.</p>' +
+      '<div class="def"><b>Ponto de articulação (colunas):</b> onde a língua ou os lábios trabalham, dos lábios (bilabial) até o fundo da boca (velar).</div>' +
+      '<div class="def"><b>Modo de articulação (linhas):</b> como o ar sai. Barrado e solto (oclusiva), apertado com chiado (fricativa), pelo nariz (nasal), pelos lados da língua (lateral), numa batidinha (tepe).</div>' +
+      '<div class="def"><b>Sonoridade:</b> ponha a mão na garganta. Se vibrar, é sonora (como [b], [d], [g]). Se não vibrar, é surda (como [p], [t], [k]).</div>' +
+      '<p>Dica: os sons são os da fala, não as letras. "ch" e "x" podem fazer o mesmo som.</p>',
+    vog: '<p>As vogais saem sem barreira, e o que muda é a posição da língua e dos lábios.</p>' +
+      '<div class="def"><b>Altura (linhas):</b> quão alta fica a língua. Em [i] e [u] ela está lá em cima; em [a] ela desce.</div>' +
+      '<div class="def"><b>Anterioridade (colunas):</b> a língua vai para a frente (como em [i]), fica no meio ([a]) ou recua ([u]).</div>' +
+      '<div class="def"><b>Arredondamento:</b> os lábios fazem um "bico"? Em [u] sim; em [i] não.</div>' +
+      '<p>Teste: diga "i", "a", "u" devagar e observe a boca no espelho.</p>',
+    par: '<div class="def"><b>Par mínimo:</b> duas palavras que se diferenciam por um único som, como <b>faca</b> e <b>vaca</b>. Quando trocar um som muda a palavra, esse som é importante na língua.</div>' +
+      '<p>Aqui você descobre <b>qual característica</b> separa os dois sons: a sonoridade, o ponto ou o modo (nas consoantes), ou a altura, a anterioridade e o arredondamento (nas vogais).</p>',
+    alo: '<div class="def"><b>Fonema:</b> um som que distingue palavras. Trocar [f] por [v] muda faca para vaca.</div>' +
+      '<div class="def"><b>Alofone:</b> uma forma diferente de pronunciar o mesmo fonema, sem mudar a palavra.</div>' +
+      '<div class="def"><b>Distribuição complementar:</b> cada alofone aparece num lugar diferente da palavra (nunca no mesmo).</div>' +
+      '<div class="def"><b>Variação livre:</b> os dois alofones podem aparecer no mesmo lugar, e a palavra continua a mesma.</div>',
+    ap: '<p>Falar é um trabalho de equipe. Os <b>pulmões</b> mandam o ar, a <b>laringe</b> faz a voz vibrar, e a <b>boca</b> (língua, lábios, dentes e céu da boca) dá forma ao som.</p>' +
+      '<p>Em <b>Explorar</b>, toque nas partes e leia o que cada uma faz. Em <b>Jogar</b>, você acha a parte certa a partir do nome, de uma pista ou de um som.</p>'
+  };
+  function showHelp(mode) {
+    overlay.innerHTML = '<div class="modal"><h2>' + esc(MODES[mode].head) + '</h2>' + HELP[mode] + '<button class="btn primary" id="okHelp">Entendi</button></div>';
+    overlay.hidden = false;
+  }
+
+  // ---------- fluxo ----------
+  function next() {
+    if (G.phase !== 'feedback') return;
+    if (G.lives <= 0) return endGame(false);
+    if (isQuadro()) askQuadro(); else if (G.mode === 'par') askPar(); else if (G.mode === 'alo') askAlo(); else askAp();
+  }
+  function endGame(win) {
+    G.phase = 'over'; closeSheet();
+    const q = isQuadro(), m = G.mode;
+    const n = q ? G.placed.size : G.hits, total = q ? SETS[G.set].items.length : G.round, denom = q ? total : ROUNDS;
+    const b = store.best[m], record = n > b.n || (n === b.n && G.score > b.score);
+    if (record) { b.n = n; b.score = G.score; persist(); }
+    const title = q ? (win ? 'Quadro completo!' : 'Fim de jogo') : (win ? 'Partida concluída' : 'Fim de jogo');
+    const unit = q ? 'sons' : (m === 'par' ? 'pares' : m === 'alo' ? 'casos' : 'partes');
+    const nm = ORDER[(ORDER.indexOf(m) + 1) % ORDER.length];
+    overlay.innerHTML = '<div class="modal"><h2>' + title + '</h2><p>Você ' + (q ? 'posicionou ' : 'acertou ') + n + ' de ' + total + ' ' + unit + ' e fez <b>' + G.score + '</b> pontos.</p>' +
+      '<p class="rec">' + (record ? 'Novo recorde neste aparelho!' : 'Recorde: ' + b.n + '/' + denom + ' · ' + b.score + ' pontos.') + '</p>' +
+      '<button class="btn primary" id="again">Jogar de novo</button><button class="btn cyan" id="nextMode">Próximo: ' + esc(MODES[nm].head) + '</button><button class="btn ghost" id="toMenu">Voltar ao menu</button></div>';
+    overlay.hidden = false;
+  }
+  function newGame(mode) {
+    Object.assign(G, { mode: mode, set: mode === 'vog' ? 'vog' : 'cons', score: 0, streak: 0, lives: LIVES, phase: 'idle', placed: new Set(), cur: null,
+      last: null, sel: null, round: 0, hits: 0, pair: null, recent: [], deck: shuffle(ALLO.slice()), item: null, sub: 'explore', apq: null, apRecent: [], lastW: {} });
+    closeSheet(); overlay.hidden = true;
+    $('#home').hidden = true; $('#game').hidden = false; $('#gTitle').textContent = MODES[mode].head;
+    window.scrollTo(0, 0);
+    if (isQuadro()) { buildQuadro(); askQuadro(); }
+    else if (mode === 'par') { buildPar(); askPar(); }
+    else if (mode === 'alo') { buildAlo(); askAlo(); }
+    else { buildAp(); setSub('explore'); }
+    if (!store.seen[mode]) { store.seen[mode] = 1; persist(); showHelp(mode); }
+  }
+  function showHome() {
+    closeSheet(); overlay.hidden = true; G.phase = 'idle'; G.mode = null;
+    $('#game').hidden = true; $('#home').hidden = false; window.scrollTo(0, 0);
+  }
+
+  // ---------- menu ----------
+  (function buildMenu() {
+    const ul = $('#menu');
+    ORDER.forEach(m => {
+      const d = MODES[m], li = document.createElement('li');
+      li.innerHTML = '<button class="mcard" data-mode="' + m + '"><div class="tile ' + d.cls + '" aria-hidden="true">' + (m === 'ap' ? APIC : esc(d.tile)) + '</div>' +
+        '<div><span class="tag">' + d.tag + '</span><h2>' + esc(d.head) + '</h2><p>' + esc(d.desc) + '</p></div></button>';
+      ul.appendChild(li);
+    });
+    if (window.HAS_PONG) {
+      const li = document.createElement('li');
+      li.innerHTML = '<a class="mcard" href="pong.html"><div class="tile t-pong" aria-hidden="true"><svg viewBox="0 0 76 76"><rect x="20" y="10" width="36" height="7" rx="3" fill="#fffdf3" stroke="#1e1b4b" stroke-width="2.5"/><rect x="20" y="59" width="36" height="7" rx="3" fill="#ffc531" stroke="#1e1b4b" stroke-width="2.5"/><circle cx="44" cy="36" r="6" fill="#ee2d73" stroke="#1e1b4b" stroke-width="2.5"/></svg></div>' +
+        '<div><span class="tag">Arcade</span><h2>Pong</h2><p>Para dar um tempo: arraste o dedo e vença a máquina.</p></div></a>';
+      ul.appendChild(li);
+    }
+  })();
+
+  document.addEventListener('click', e => {
+    const t = e.target;
+    const mc = t.closest('button.mcard'); if (mc) return newGame(mc.dataset.mode);
+    if (t.closest('#backBtn')) return showHome();
+    if (t.closest('#helpBtn')) return G.mode && showHelp(G.mode);
+    if (t.closest('#okHelp')) { overlay.hidden = true; return; }
+    if (t.closest('#again')) return newGame(G.mode);
+    if (t.closest('#nextMode')) return newGame(ORDER[(ORDER.indexOf(G.mode) + 1) % ORDER.length]);
+    if (t.closest('#toMenu')) return showHome();
+    const sb = t.closest('.seg button'); if (sb) return setSub(sb.dataset.sub);
+    const part = t.closest('#anat [data-part]'); if (part) return tapPart(part.dataset.part);
+    const cell = t.closest('.cell'); if (cell) return chooseCell(cell);
+    const vb = t.closest('button[data-v]'); if (vb) return answerQuadro(Number(vb.dataset.v));
+    const fb = t.closest('button[data-f]'); if (fb) return answerPar(fb.dataset.f);
+    const ab = t.closest('button[data-a]'); if (ab) return answerAlo(ab.dataset.a);
+  });
+})();
+</script>
+
+</body></html>
